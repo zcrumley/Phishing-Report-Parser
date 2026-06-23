@@ -1,0 +1,24 @@
+# Python cache files
+__pycache__/
+*.pyc
+
+# Virtual environment
+venv/
+
+# Environment variables / secrets
+.env
+
+# Editor files
+.vscode/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Raw sample emails and generated reports
+sample_data/*.eml
+reports/*.json
+
+# Raw datasets
+datasets/
+*.csv
