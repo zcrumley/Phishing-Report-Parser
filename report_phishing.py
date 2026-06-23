@@ -1,9 +1,11 @@
 from email import policy
 from email.parser import BytesParser
 from pathlib import Path
+from email.utils import parseaddr
 import argparse
 import re
 import json
+
 
 def load_email(file_path):
     """
@@ -20,6 +22,21 @@ def get_header(message, header_name):
     Safely gets a header value from the email.
     """
     return str(message.get(header_name, ""))
+
+
+def extract_domain(email_value):
+    """
+    Extracts the domain from an email address or header value.
+    """
+    if not email_value:
+        return ""
+
+    _, email_address = parseaddr(email_value)
+
+    if "@" not in email_address:
+        return ""
+
+    return email_address.split("@")[-1].lower()
 
 
 def extract_body(message):
@@ -42,28 +59,75 @@ def extract_body(message):
 
 def extract_urls(text):
     """
-    Finds URLs in the email body.
+    Finds unique URLs in the email body.
     """
     url_pattern = r"https?://[^\s\"'<>]+"
-    return re.findall(url_pattern, text)
+    urls = re.findall(url_pattern, text)
+
+    return list(dict.fromkeys(urls))
+
+
+def parse_authentication_results(auth_results):
+    """
+    Extracts SPF, DKIM, DMARC, and CompAuth results from Authentication-Results.
+    """
+    auth_summary = {
+        "spf": "",
+        "dkim": "",
+        "dmarc": "",
+        "compauth": ""
+    }
+
+    lower_auth = auth_results.lower()
+
+    spf_match = re.search(r"spf=([a-zA-Z0-9_-]+)", lower_auth)
+    dkim_match = re.search(r"dkim=([a-zA-Z0-9_-]+)", lower_auth)
+    dmarc_match = re.search(r"dmarc=([a-zA-Z0-9_-]+)", lower_auth)
+    compauth_match = re.search(r"compauth=([a-zA-Z0-9_-]+)", lower_auth)
+
+    if spf_match:
+        auth_summary["spf"] = spf_match.group(1)
+
+    if dkim_match:
+        auth_summary["dkim"] = dkim_match.group(1)
+
+    if dmarc_match:
+        auth_summary["dmarc"] = dmarc_match.group(1)
+
+    if compauth_match:
+        auth_summary["compauth"] = compauth_match.group(1)
+
+    return auth_summary
 
 
 def build_report(message, body, urls):
     """
     Builds a structured phishing report from parsed email data.
     """
+    from_header = get_header(message, "From")
+    reply_to_header = get_header(message, "Reply-To")
+    return_path_header = get_header(message, "Return-Path")
+    authentication_results = get_header(message, "Authentication-Results")
+
     report = {
-        "from": get_header(message, "From"),
+        "from": from_header,
         "to": get_header(message, "To"),
+        "reply_to": reply_to_header,
         "subject": get_header(message, "Subject"),
         "date": get_header(message, "Date"),
         "message_id": get_header(message, "Message-Id"),
-        "return_path": get_header(message, "Return-Path"),
-        "authentication_results": get_header(message, "Authentication-Results"),
+        "return_path": return_path_header,
+        "authentication_results": authentication_results,
+        "authentication_summary": parse_authentication_results(authentication_results),
         "received_spf": get_header(message, "Received-SPF"),
         "sender_ip": get_header(message, "X-Sender-IP"),
         "content_type": get_header(message, "Content-Type"),
         "content_transfer_encoding": get_header(message, "Content-Transfer-Encoding"),
+        "domain_summary": {
+            "from_domain": extract_domain(from_header),
+            "reply_to_domain": extract_domain(reply_to_header),
+            "return_path_domain": extract_domain(return_path_header)
+        },
         "urls": urls,
         "url_count": len(urls),
         "body_preview": body[:500]
