@@ -67,6 +67,38 @@ def extract_urls(text):
     return list(dict.fromkeys(urls))
 
 
+def extract_attachments(message):
+    """
+    Extracts attachment metadata from the email without opening or executing files.
+    """
+    attachments = []
+
+    for part in message.walk():
+        content_disposition = part.get_content_disposition()
+        filename = part.get_filename()
+
+        if content_disposition == "attachment" or filename:
+            payload = part.get_payload(decode=True)
+
+            if payload is None:
+                file_size = 0
+                sha256_hash = ""
+            else:
+                file_size = len(payload)
+                sha256_hash = hashlib.sha256(payload).hexdigest()
+
+            attachment_info = {
+                "filename": filename or "",
+                "content_type": part.get_content_type(),
+                "size_bytes": file_size,
+                "sha256": sha256_hash
+            }
+
+            attachments.append(attachment_info)
+
+    return attachments
+
+
 def parse_authentication_results(auth_results):
     """
     Extracts SPF, DKIM, DMARC, and CompAuth results from Authentication-Results.
@@ -100,7 +132,7 @@ def parse_authentication_results(auth_results):
     return auth_summary
 
 
-def build_report(message, body, urls):
+def build_report(message, body, urls, attachments ):
     """
     Builds a structured phishing report from parsed email data.
     """
@@ -130,7 +162,9 @@ def build_report(message, body, urls):
         },
         "urls": urls,
         "url_count": len(urls),
-        "body_preview": body[:500]
+        "body_preview": body[:500],
+        "attachments": attachments,
+        "attachment_count": len(attachments),
     }
 
     return report
@@ -171,8 +205,9 @@ def main():
     message = load_email(email_file)
     body = extract_body(message)
     urls = extract_urls(body)
+    attachments = extract_attachments(message)
 
-    report = build_report(message, body, urls)
+    report = build_report(message, body, urls, attachments)
     reports_dir = Path("reports")
     reports_dir.mkdir(exist_ok=True)
 
@@ -204,6 +239,15 @@ def main():
 
     print()
     print(f"Report saved to: {output_file}")    
+
+    print()
+    print(f"Attachments Found: {len(attachments)}")
+
+    for attachment in attachments:
+        print(f"- Filename: {attachment['filename']}")
+        print(f"  Content-Type: {attachment['content_type']}")
+        print(f"  Size: {attachment['size_bytes']} bytes")
+        print(f"  SHA-256: {attachment['sha256']}")
 
 
 if __name__ == "__main__":
