@@ -1,0 +1,58 @@
+{
+    "from": "BANCO DO BRADESCO LIVELO <banco.bradesco@atendimento.com.br>",
+    "to": "phishing@pot",
+    "reply_to": "",
+    "subject": "CLIENTE PRIME - BRADESCO LIVELO: Seu cart\u00e3o tem 92.990 pontos LIVELO expirando hoje!",
+    "date": "Tue, 19 Sep 2023 18:35:49 +0000",
+    "message_id": "<20230919183549.39DEA3F725@ubuntu-s-1vcpu-1gb-35gb-intel-sfo3-06>",
+    "return_path": "root@ubuntu-s-1vcpu-1gb-35gb-intel-sfo3-06",
+    "authentication_results": "spf=temperror (sender IP is 137.184.34.4) smtp.mailfrom=ubuntu-s-1vcpu-1gb-35gb-intel-sfo3-06; dkim=none (message not signed) header.d=none;dmarc=temperror action=none header.from=atendimento.com.br;compauth=fail reason=001",
+    "authentication_summary": {
+        "spf": "temperror",
+        "dkim": "none",
+        "dmarc": "temperror",
+        "compauth": "fail"
+    },
+    "received_spf": "TempError (protection.outlook.com: error in processing during lookup of ubuntu-s-1vcpu-1gb-35gb-intel-sfo3-06: DNS Timeout)",
+    "sender_ip": "137.184.34.4",
+    "content_type": "text/html; charset=\"UTF-8\"",
+    "content_transfer_encoding": "base64",
+    "domain_summary": {
+        "from_domain": "atendimento.com.br",
+        "reply_to_domain": "",
+        "return_path_domain": "ubuntu-s-1vcpu-1gb-35gb-intel-sfo3-06"
+    },
+    "domain_mismatches": [
+        {
+            "type": "from_return_path_mismatch",
+            "description": "From domain does not match Return-Path domain.",
+            "from_domain": "atendimento.com.br",
+            "return_path_domain": "ubuntu-s-1vcpu-1gb-35gb-intel-sfo3-06"
+        }
+    ],
+    "urls": [
+        "https://blog1seguimentmydomaine2bra.me/",
+        "https://fonts.gstatic.com",
+        "https://fonts.googleapis.com/css2?family=Signika:wght@300;500;700&amp;display=swap"
+    ],
+    "url_count": 3,
+    "url_domains": [
+        "blog1seguimentmydomaine2bra.me",
+        "fonts.gstatic.com",
+        "fonts.googleapis.com"
+    ],
+    "url_domain_count": 3,
+    "suspicious_urls": [],
+    "suspicious_url_count": 0,
+    "body_preview": "<!DOCTYPE html><html lang=\"en\"><head>\r\n<meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\"><body style=\"background-color:rgb(241, 241, 241);\">\r\n\n\r\n\n\t<p style=\"text-align:center;\">\r\n\n\t\t<font face=\"Arial\" size=\"2\">Para visualizar as imagens deste email. <a href=\"https://blog1seguimentmydomaine2bra.me/\">Clique aqui</a></font>\r\n\n\t</p>\r\n\n\r\n\n    \r\n\n    <meta http-equiv=\"X-UA-Compatible\" content=\"IE=edge\">\r\n\n    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\r\n\n   ",
+    "attachments": [],
+    "attachment_count": 0,
+    "attachment_findings": [],
+    "triage_summary": [
+        "SPF result was temperror",
+        "DKIM result was none",
+        "DMARC result was temperror",
+        "CompAuth result was fail",
+        "Sender-related domain mismatch found"
+    ]
+}
