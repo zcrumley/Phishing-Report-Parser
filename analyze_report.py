@@ -186,36 +186,38 @@ def get_recommended_action(risk_level):
     return "No obvious suspicious characteristics were identified by the available checks."
 
 
-def print_analysis(report, risk_score, risk_level, findings, recommended_action):
+def build_analysis_text(report, risk_score, risk_level, findings, recommended_action):
     """
-    Prints a clean analyst-style summary.
+    Builds a clean analyst-style text report.
     """
-    print("Phishing Report Analysis")
-    print("========================")
-    print()
+    lines = []
 
-    print("Email Summary:")
-    print(f"From: {report.get('from', '')}")
-    print(f"Subject: {report.get('subject', '')}")
-    print(f"Date: {report.get('date', '')}")
-    print()
+    lines.append("Phishing Report Analysis")
+    lines.append("========================")
+    lines.append("")
 
-    print("Risk Assessment:")
-    print(f"Risk Level: {risk_level}")
-    print(f"Risk Score: {risk_score}")
-    print()
+    lines.append("Email Summary:")
+    lines.append(f"From: {report.get('from', '')}")
+    lines.append(f"Subject: {report.get('subject', '')}")
+    lines.append(f"Date: {report.get('date', '')}")
+    lines.append("")
 
-    print("Key Findings:")
+    lines.append("Risk Assessment:")
+    lines.append(f"Risk Level: {risk_level}")
+    lines.append(f"Risk Score: {risk_score}")
+    lines.append("")
+
+    lines.append("Key Findings:")
 
     if findings:
         for finding in findings:
-            print(f"- {finding}")
+            lines.append(f"- {finding}")
     else:
-        print("- No notable findings identified.")
+        lines.append("- No notable findings identified.")
 
-    print()
+    lines.append("")
 
-    print("Notable Domains:")
+    lines.append("Notable Domains:")
 
     domain_summary = report.get("domain_summary", {})
     url_domains = report.get("url_domains", [])
@@ -225,21 +227,43 @@ def print_analysis(report, risk_score, risk_level, findings, recommended_action)
     return_path_domain = domain_summary.get("return_path_domain", "")
 
     if from_domain:
-        print(f"- From Domain: {from_domain}")
+        lines.append(f"- From Domain: {from_domain}")
 
     if reply_to_domain:
-        print(f"- Reply-To Domain: {reply_to_domain}")
+        lines.append(f"- Reply-To Domain: {reply_to_domain}")
 
     if return_path_domain:
-        print(f"- Return-Path Domain: {return_path_domain}")
+        lines.append(f"- Return-Path Domain: {return_path_domain}")
 
     for domain in url_domains:
-        print(f"- URL Domain: {domain}")
+        lines.append(f"- URL Domain: {domain}")
 
-    print()
+    lines.append("")
 
-    print("Recommended Action:")
-    print(recommended_action)
+    lines.append("Recommended Action:")
+    lines.append(recommended_action)
+
+    return "\n".join(lines)
+
+
+def save_analysis(analysis_text, input_report_file):
+    """
+    Saves the analyst-style report to reports/analyzed.
+    """
+    analyzed_reports_dir = Path("reports") / "analyzed"
+    analyzed_reports_dir.mkdir(parents=True, exist_ok=True)
+
+    report_stem = input_report_file.stem
+
+    if report_stem.endswith("_report"):
+        report_stem = report_stem.replace("_report", "")
+
+    output_file = analyzed_reports_dir / f"{report_stem}_analysis.txt"
+
+    with open(output_file, "w", encoding="utf-8") as file:
+        file.write(analysis_text)
+
+    return output_file
 
 
 def parse_arguments():
@@ -278,13 +302,19 @@ def main():
     risk_level = determine_risk_level(risk_score)
     recommended_action = get_recommended_action(risk_level)
 
-    print_analysis(
+    analysis_text = build_analysis_text(
         report,
         risk_score,
         risk_level,
         findings,
         recommended_action
     )
+
+    output_file = save_analysis(analysis_text, report_file)
+
+    print(analysis_text)
+    print()
+    print(f"Analysis saved to: {output_file}")
 
 
 if __name__ == "__main__":

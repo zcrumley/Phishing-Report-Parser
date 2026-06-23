@@ -1,0 +1,31 @@
+Phishing Report Analysis
+========================
+
+Email Summary:
+From: BANCO DO BRADESCO LIVELO <banco.bradesco@atendimento.com.br>
+Subject: CLIENTE PRIME - BRADESCO LIVELO: Seu cartão tem 92.990 pontos LIVELO expirando hoje!
+Date: Tue, 19 Sep 2023 18:35:49 +0000
+
+Risk Assessment:
+Risk Level: High
+Risk Score: 9
+
+Key Findings:
+- SPF did not pass. Result: temperror
+- DKIM did not pass. Result: none
+- DMARC did not pass. Result: temperror
+- CompAuth did not pass. Result: fail
+- Sender-related domain mismatch was found.
+- From domain 'atendimento.com.br' does not match Return-Path domain 'ubuntu-s-1vcpu-1gb-35gb-intel-sfo3-06'.
+- Email contains 3 URL(s).
+- Email contains 3 unique URL domain(s).
+
+Notable Domains:
+- From Domain: atendimento.com.br
+- Return-Path Domain: ubuntu-s-1vcpu-1gb-35gb-intel-sfo3-06
+- URL Domain: blog1seguimentmydomaine2bra.me
+- URL Domain: fonts.gstatic.com
+- URL Domain: fonts.googleapis.com
+
+Recommended Action:
+Treat this email as suspicious. Do not interact with links or attachments. Escalate for further review.
