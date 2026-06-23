@@ -388,9 +388,10 @@ def main():
     report = build_report(message, body, urls, attachments)
 
     reports_dir = Path("reports")
-    reports_dir.mkdir(exist_ok=True)
+    raw_reports_dir = reports_dir / "raw"
+    raw_reports_dir.mkdir(parents=True, exist_ok=True)
 
-    output_file = reports_dir / f"{email_file.stem}_report.json"
+    output_file = raw_reports_dir / f"{email_file.stem}_report.json"
     save_report(report, output_file)
 
     print("Email parsed successfully.")
