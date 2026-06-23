@@ -16,7 +16,6 @@ venv/
 Thumbs.db
 
 # Raw sample emails and generated reports
-sample_data/*.eml
 reports/*.json
 
 # Raw datasets
