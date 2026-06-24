@@ -4,8 +4,6 @@ A Python command-line tool for parsing suspicious `.eml` email files and extract
 
 This project was built to make phishing email review faster, more organized, and easier to document. It takes a saved email file, extracts useful information from the headers and body, displays the results in the terminal, and saves a structured JSON report for later review.
 
-Part 2 of this project will be to build a python tool that reads the JSON output and scores it based on phishing likelihood. 
-
 ---
 
 ## Overview
@@ -59,11 +57,11 @@ The parser extracts and organizes information such as:
 
 ## Why I Built This
 
-This project was created to practice Python scripting, email artifact extraction, and phishing investigation workflows.
+This project started with the question: Can I build my own 'Report Phishing' button? 
 
 When reviewing suspicious emails, important evidence is often spread across multiple parts of the message source. This tool helps collect that information into one organized output so the email can be reviewed more efficiently.
 
-The project also gave me practice working with:
+The project gave me practice working with:
 
 - Python file handling
 - Email parsing
@@ -77,23 +75,24 @@ The project also gave me practice working with:
 ---
 
 ## Project Structure
-
-```text
+```
 Phishing-Report-Parser/
 │
 ├── README.md
-├── requirements.txt
 ├── .gitignore
 │
-├── main.py
 ├── report_phishing.py
 ├── analyze_report.py
 │
 ├── sample_data/
-│   └── .eml test files
+│   └── sample .eml files
 │
 ├── reports/
-│   └── generated JSON reports
+│   ├── raw/
+│   │   └── generated JSON reports
+│   │
+│   └── analyzed/
+│       └── generated text analysis reports
 │
 └── screenshots/
     └── project screenshots and example output
@@ -103,7 +102,7 @@ Phishing-Report-Parser/
 
 ## How It Works
 
-The script takes a saved `.eml` file as input.
+The script `report_phishing.py` takes a saved `.eml` file as input.
 
 It then:
 
@@ -117,17 +116,34 @@ It then:
 8. Displays the results in the terminal.
 9. Saves the findings to a JSON report.
 
+The script `analyze_report.py` takes the JSON report created by `report_phishing.py` as input.
+
+It then:
+
+1. Opens and reads the saved JSON report.
+2. Reviews the extracted authentication results.
+3. Checks for sender-related domain mismatches.
+4. Reviews extracted URL and URL domain information.
+5. Reviews attachment findings when available.
+6. Builds a list of key findings for analyst review.
+7. Calculates a basic risk score based on the report data.
+8. Assigns a risk level such as Informational, Low, Medium, or High.
+9. Displays a clean analyst-style summary in the terminal.
+10. Saves the analyzed findings to a text report.
+
 ---
 
-## Usage
+## Workflow
 
 Run the script from the command line and provide the path to the `.eml` file:
 
 ```bash
 python report_phishing.py sample_data/sample-1.eml
+python analyze_report.py reports/raw/sample-1_report.json
 ```
 
-After the script runs, the results will be shown in the terminal and saved as a JSON report in the `reports/` folder.
+The first command creates a raw JSON report and saves it in `reports/raw`.
+The second command analyzes that JSON report and creates a more human-readable analysis file and saves it in `reports/analyzed`.
 
 ---
 
@@ -193,6 +209,45 @@ This is a preview of the email body...
 }
 ```
 
+## Example Analyzed Report Output 
+
+```text
+
+Phishing Report Analysis
+========================
+
+Email Summary:
+From: BANCO DO BRADESCO LIVELO <banco.bradesco@atendimento.com.br>
+Subject: CLIENTE PRIME - BRADESCO LIVELO: Seu cartão tem 92.990 pontos LIVELO expirando hoje!
+Date: Tue, 19 Sep 2023 18:35:49 +0000
+
+Risk Assessment:
+Risk Level: High
+Risk Score: 9
+
+Key Findings:
+- SPF did not pass. Result: temperror
+- DKIM did not pass. Result: none
+- DMARC did not pass. Result: temperror
+- CompAuth did not pass. Result: fail
+- Sender-related domain mismatch was found.
+- From domain 'atendimento.com.br' does not match Return-Path domain 'ubuntu-s-1vcpu-1gb-35gb-intel-sfo3-06'.
+- Email contains 3 URL(s).
+- Email contains 3 unique URL domain(s).
+
+Notable Domains:
+- From Domain: atendimento.com.br
+- Return-Path Domain: ubuntu-s-1vcpu-1gb-35gb-intel-sfo3-06
+- URL Domain: blog1seguimentmydomaine2bra.me
+- URL Domain: fonts.gstatic.com
+- URL Domain: fonts.googleapis.com
+
+Recommended Action:
+Treat this email as suspicious. Do not interact with links or attachments. Escalate for further review.
+
+Analysis saved to: reports/analyzed/sample-1_analysis.txt
+```
+
 ---
 
 ## Skills Demonstrated
@@ -246,6 +301,8 @@ Planned or possible future improvements include:
 A user receives a suspicious email and saves it as an `.eml` file. The analyst runs the parser against the file and quickly receives a structured report showing the sender information, authentication results, extracted links, sender domains, and a preview of the email body.
 
 The analyst can then use that information to support a phishing investigation, document findings, and decide whether further review is needed.
+
+**SIEM Alerting:** Because the parser saves findings in structured JSON format, the output could be monitored by a SIEM and used to trigger alerts. Rules could be written to detect failed SPF/DKIM/DMARC results, sender domain mismatches, suspicious URLs, or risky attachment types.
 
 ---
 
