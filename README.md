@@ -70,7 +70,6 @@ The project gave me practice working with:
 - URL extraction
 - JSON report generation
 - Command-line tool design
-- Git and GitHub project workflow
 
 ---
 
@@ -261,7 +260,6 @@ This project demonstrates hands-on experience with:
 - URL parsing
 - JSON report creation
 - Basic SOC analyst investigation workflow
-- Git branching and pull request workflow
 - Project documentation
 
 ---
