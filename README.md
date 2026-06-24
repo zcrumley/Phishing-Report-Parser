@@ -87,11 +87,11 @@ Phishing-Report-Parser/
 │   └── sample .eml files
 │
 ├── reports/
-│   ├── raw/
-│   │   └── generated JSON reports
-│   │
-│   └── analyzed/
-│       └── generated text analysis reports
+    ├── raw/
+    │   └── generated JSON reports
+    │
+    └── analyzed/
+       └── generated text analysis reports
 
 ```
 
