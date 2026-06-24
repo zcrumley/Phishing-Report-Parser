@@ -92,9 +92,7 @@ Phishing-Report-Parser/
 │   │
 │   └── analyzed/
 │       └── generated text analysis reports
-│
-└── screenshots/
-    └── project screenshots and example output
+
 ```
 
 ---
